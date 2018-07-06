@@ -14,9 +14,9 @@ from SeparableConvolution import SeparableConvolution # the custom SeparableConv
 
 ##########################################################
 
-assert(int(torch.__version__.replace('.', '')) >= 40) # requires at least pytorch version 0.4.0
+# assert(int(torch.__version__.replace('.', '')) >= 40) # requires at least pytorch version 0.4.0
 
-torch.set_grad_enabled(False) # make sure to not compute gradients for computational performance
+# torch.set_grad_enabled(False) # make sure to not compute gradients for computational performance
 
 torch.cuda.device(1) # change this if you have a multiple graphics cards and you want to utilize them
 
@@ -70,7 +70,7 @@ class Network(torch.nn.Module):
 				torch.nn.ReLU(inplace=False),
 				torch.nn.Conv2d(in_channels=64, out_channels=51, kernel_size=3, stride=1, padding=1),
 				torch.nn.ReLU(inplace=False),
-				torch.nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True),
+				torch.nn.Upsample(scale_factor=2, mode='bilinear'),
 				torch.nn.Conv2d(in_channels=51, out_channels=51, kernel_size=3, stride=1, padding=1)
 			)
 		# end
@@ -92,28 +92,28 @@ class Network(torch.nn.Module):
 
 		self.moduleDeconv5 = Basic(512, 512)
 		self.moduleUpsample5 = torch.nn.Sequential(
-			torch.nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True),
+			torch.nn.Upsample(scale_factor=2, mode='bilinear'),
 			torch.nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, stride=1, padding=1),
 			torch.nn.ReLU(inplace=False)
 		)
 
 		self.moduleDeconv4 = Basic(512, 256)
 		self.moduleUpsample4 = torch.nn.Sequential(
-			torch.nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True),
+			torch.nn.Upsample(scale_factor=2, mode='bilinear'),
 			torch.nn.Conv2d(in_channels=256, out_channels=256, kernel_size=3, stride=1, padding=1),
 			torch.nn.ReLU(inplace=False)
 		)
 
 		self.moduleDeconv3 = Basic(256, 128)
 		self.moduleUpsample3 = torch.nn.Sequential(
-			torch.nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True),
+			torch.nn.Upsample(scale_factor=2, mode='bilinear'),
 			torch.nn.Conv2d(in_channels=128, out_channels=128, kernel_size=3, stride=1, padding=1),
 			torch.nn.ReLU(inplace=False)
 		)
 
 		self.moduleDeconv2 = Basic(128, 64)
 		self.moduleUpsample2 = torch.nn.Sequential(
-			torch.nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True),
+			torch.nn.Upsample(scale_factor=2, mode='bilinear'),
 			torch.nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, stride=1, padding=1),
 			torch.nn.ReLU(inplace=False)
 		)
@@ -229,7 +229,7 @@ if True:
 	tensorPreprocessedFirst = modulePaddingInput(tensorInputFirst.view(1, 3, intHeight, intWidth))
 	tensorPreprocessedSecond = modulePaddingInput(tensorInputSecond.view(1, 3, intHeight, intWidth))
 
-	tensorOutput.resize_(3, intHeight, intWidth).copy_(modulePaddingOutput(moduleNetwork(tensorPreprocessedFirst, tensorPreprocessedSecond))[0, :, :, :])
+	tensorOutput.resize_(3, intHeight, intWidth).copy_(modulePaddingOutput(moduleNetwork(tensorPreprocessedFirst, tensorPreprocessedSecond))[0, :, :, :].data)
 # end
 
 if True:
